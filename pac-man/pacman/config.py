@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
+from typing import Any
 
 
-@dataclass
 class ConfigError(Exception):
     """Class used to control errors that crashes the program"""
 
@@ -12,10 +12,19 @@ class LevelConfig():
     height: int = 10
 
 
+def return_levels() -> list[LevelConfig]:
+    i = 0
+    result = []
+    while i < 10:
+        levels = LevelConfig()
+        result.append(levels)
+        i += 1
+    return result
+
 @dataclass
 class GameConfig():
-    levels: int = field(default_factory=list[LevelConfig])
-    highscore_filename: str = "Billy Mitchell type aaah"
+    levels: list[LevelConfig] = field(default_factory=return_levels)
+    highscore_filename: str = "Billy_Mitchell_type_aaah.json"
     lives: int = 3
     pacgum: int = 42
     points_per_pacgum: int = 10
@@ -25,43 +34,61 @@ class GameConfig():
     level_max_time: int = 90
 
 
-def strip_comments(text: str) -> list[str]:
-    stripped: str = str.splitlines(text)
+def strip_comments(text: str) -> str:
+    stripped: list[str] = text.splitlines()
 
-    empty: str = ""
+    result: list[str] = []
     for line in stripped:
-        result = []
         if line.lstrip().startswith("#"):
-            result.append(empty)
-        result.append(stripped)
+            result.append("")
+        else:
+            result.append(line)
 
     new_text: str = "\n".join(result)
 
     return new_text
 
 
-""" def get_int(data, key, default, lo, hi, warnings) -> int:
-    try:
-        with open(data, encoding="utf-8") as content:
-            if key not in data:
-                print("Warning: data not detected in key. Default'll be used")
-                return default
-            readed = content.read()
-            if readed is not bool or readed is not int:
-                print("Warning: readed content is not bool or int. Default'll be used")
-                return default
-            if readed < lo:
-                print("Warning: readed size is too low. Lo will be used")
-                return lo
-            if readed > hi:
-                print("Warning: readed size is to high. Hi will be used")
-                return hi """
+def get_int(data: dict[str, Any], key: str, default: int, lo: int, hi: int, warnings: list[str]) -> int:
+        if key not in data:
+            warnings.append("Warning: value not detected in data. Default'll be used")
+            return default
+        value = data[key]
+        
+        if not isinstance(value, int) or isinstance(value, bool):
+            warnings.append(f"Warning: value content: {value} is not bool or int. Default'll be used: {default}")
+            return default
+        if value < lo:
+            warnings.append(f"Warning: value size is too low: {value}. Lo will be used: {lo}")
+            return lo
+        if value > hi:
+            warnings.append(f"Warning: value size is to high: {value}. Hi will be used: {hi}")
+            return hi
+        
+        return value
 
 
-def parse_levels(raw, warnings) -> list[LevelConfig]: ...
+def parse_levels(raw: dict[str, Any], warnings: list[str]) -> list[LevelConfig]:
+    if not raw:
+        warnings.append("Warning: no raw data detected.")
 
 
-def load_config(path: str) -> GameConfig: ...       # orquesta todo
+def load_config(path: str) -> GameConfig: ...       # orquesta todo """
 
 
-print(strip_comments("#hola que tal"))
+""" print(strip_comments("#hola que tal"))
+warnings: list[str] = []
+
+result = get_int(
+    data={"lives": 50},
+    key="lives",
+    default=3,
+    lo=1,
+    hi=99,
+    warnings=warnings
+)
+
+print(result)
+print(warnings) """
+
+print(return_levels())
