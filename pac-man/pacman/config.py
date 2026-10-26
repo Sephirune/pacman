@@ -111,7 +111,7 @@ def get_str(data: dict[str, Any], key: str, default: str, warnings: list[str]) -
 
 def parse_levels(raw: Any, warnings: list[str]) -> list[LevelConfig]:
     if not isinstance(raw, list) or not raw:
-        warnings.append("no raw data detected.")
+        warnings.append("'levels' is missing or not a non-empty list.")
         return return_levels()  # Si no hay datos, devuelve niveles
 
     level_list: list[LevelConfig] = []

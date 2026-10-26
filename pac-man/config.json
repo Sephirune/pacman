@@ -1,0 +1,15 @@
+# Example configuration for pac-man
+{
+    "lives": 3,
+    "seed": 42,
+    "highscore_filename": "highscores.json",
+    "levels": [
+        {"width": 21, "height": 15},
+        {"width": 25, "height": 17}
+    ],
+    "pacgum": 42,
+    "points_per_pacgum": 10,
+    "points_per_super_pacgum": 50,
+    "points_per_ghost": 200,
+    "level_max_time": 90
+}

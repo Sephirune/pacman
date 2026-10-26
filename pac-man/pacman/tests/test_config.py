@@ -83,3 +83,18 @@ def test_warnings_go_to_stderr(
         tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     load_config(write(tmp_path, "c.json", '{"lives": "tres"}'))
     assert "lives" in capsys.readouterr().err
+
+
+import subprocess
+import sys
+
+
+def run(*args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run([sys.executable, "pac-man.py", *args],
+                          capture_output=True, text=True)
+
+
+def test_no_args() -> None:
+    result = run()
+    assert result.returncode == 1
+    assert "Traceback" not in result.stderr
