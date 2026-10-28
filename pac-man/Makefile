@@ -12,7 +12,7 @@ debug:
 	uv run python -m pdb -m src
 
 lint:
-	uv run flake8 . --exclude=.venv,data
+	uv run flake8 . --exclude=.venv
 	uv run mypy . \
 		--exclude '(\.venv|data)' \
 		--warn-return-any \

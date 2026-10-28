@@ -1,10 +1,12 @@
 from pathlib import Path
 from typing import Any
+import subprocess
+import sys
 
 import pytest
 
-from config import (ConfigError, LevelConfig, get_int, load_config,
-                    parse_levels, strip_comments)
+from pacman.config import (ConfigError, LevelConfig, get_int, load_config,
+                           parse_levels, strip_comments)
 
 
 def write(tmp_path: Path, name: str, content: str) -> str:
@@ -85,8 +87,7 @@ def test_warnings_go_to_stderr(
     assert "lives" in capsys.readouterr().err
 
 
-import subprocess
-import sys
+
 
 
 def run(*args: str) -> subprocess.CompletedProcess[str]:
