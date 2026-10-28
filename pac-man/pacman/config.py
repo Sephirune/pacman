@@ -31,22 +31,32 @@ class ConfigError(Exception):
 
 @dataclass
 class LevelConfig():
+    """Size of one level."""
+
     width: int = 14
     height: int = 10
 
 
 def fill_levels(levels: list[LevelConfig]) -> list[LevelConfig]:
+    """Complete a level list up to the minimum number of levels.
+    Default levels are appended in place until the list
+    has at least 10 levels."""
+
     while len(levels) < lo_lvl:
         levels.append(LevelConfig())
     return levels
 
 
 def return_levels() -> list[LevelConfig]:
+    """Returns a new list with the default levels."""
+
     return fill_levels([])
 
 
 @dataclass
 class GameConfig():
+    """All the game parameters, with their default values."""
+
     levels: list[LevelConfig] = field(default_factory=return_levels)
     highscore_filename: str = "Billy_Mitchell_type_aaah.json"
     lives: int = 3
@@ -59,6 +69,11 @@ class GameConfig():
 
 
 def strip_comments(text: str) -> str:
+    """Blank out the comment lines of a JSON text.
+    A line whose first non-blank character is ``#`` is replaced by an
+    empty line. Lines are not removed, so the line numbers reported
+    by the JSON parser match the original file."""
+
     stripped: list[str] = text.splitlines()
 
     result: list[str] = []
@@ -74,6 +89,8 @@ def strip_comments(text: str) -> str:
 
 
 def get_int(data: dict[str, Any], key: str, default: int, lo: int, hi: int, warnings: list[str]) -> int:
+    """Read an integer from ``data`` and clamp it to a valid range."""
+
     if key not in data:
         warnings.append(f"value not detected in data: {key}. Default'll be used")
         return default
@@ -93,6 +110,8 @@ def get_int(data: dict[str, Any], key: str, default: int, lo: int, hi: int, warn
 
 
 def get_str(data: dict[str, Any], key: str, default: str, warnings: list[str]) -> str:
+    """Read a non-empty string from ``data``. If the key is missing,
+    ''default'' is returned."""
     if key not in data:
         warnings.append(f"value not detected in data: {key}. Default'll be used")
         return default
@@ -110,6 +129,9 @@ def get_str(data: dict[str, Any], key: str, default: str, warnings: list[str]) -
 
 
 def parse_levels(raw: Any, warnings: list[str]) -> list[LevelConfig]:
+    """Build the level list from the raw ``levels`` value. The result
+    always has at least 10 levels."""
+
     if not isinstance(raw, list) or not raw:
         warnings.append("'levels' is missing or not a non-empty list.")
         return return_levels()  # Si no hay datos, devuelve niveles
@@ -131,6 +153,8 @@ def parse_levels(raw: Any, warnings: list[str]) -> list[LevelConfig]:
 
 
 def load_config(path: str) -> GameConfig:
+    """Load and validate the game configuration file."""
+
     if not path.endswith(".json"):
         raise ConfigError("Invalid path extension.")
 
@@ -184,21 +208,3 @@ def load_config(path: str) -> GameConfig:
                       points_per_ghost=points_per_ghost,
                       seed=seed,
                       level_max_time=level_max_time)
-
-
-""" print(strip_comments("#hola que tal"))
-warnings: list[str] = []
-
-result = get_int(
-    data={"lives": 50},
-    key="lives",
-    default=3,
-    lo=1,
-    hi=99,
-    warnings=warnings
-)
-
-print(result)
-print(warnings)
-
-print(return_levels()) """
