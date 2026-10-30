@@ -2,12 +2,11 @@ from dataclasses import dataclass, field
 from typing import Any
 import json
 import sys
+from maze import MIN_HEIGHT as hlo, MIN_WIDTH as wlo
 
 
 # Valores para los métodos numéricos
-wlo = 14
 whi = 60
-hlo = 10
 hhi = 50
 lo_live = 1
 hi_live = 99
