@@ -10,7 +10,8 @@ whi = 60
 hhi = 50
 lo_live = 1
 hi_live = 99
-def_pacgum = 42
+lo_pacgum_count: 0
+max_pacgum_count = 3000
 lo_pacgum = 0
 hi_pacgum = 99
 lo_sppacgum = 0
@@ -54,12 +55,13 @@ def return_levels() -> list[LevelConfig]:
 
 @dataclass
 class GameConfig():
-    """All the game parameters, with their default values."""
+    """All the game parameters, with their default values.
+    Pacgum = 0 equals to a pacgum for every free cell."""
 
     levels: list[LevelConfig] = field(default_factory=return_levels)
     highscore_filename: str = "Billy_Mitchell_type_aaah.json"
     lives: int = 3
-    pacgum: int = 42
+    pacgum: int = 0
     points_per_pacgum: int = 10
     points_per_super_pacgum: int = 50
     points_per_ghost: int = 200
@@ -176,8 +178,10 @@ def load_config(path: str) -> GameConfig:
     defaults = GameConfig()
     lives = get_int(loaded_json, "lives", defaults.lives, lo_live, hi_live,
                     warnings)
-    pacgum = get_int(loaded_json, "pacgum", defaults.pacgum, def_pacgum,
-                     def_pacgum, warnings)
+    pacgum = defaults.pacgum
+    if "pacgum" in loaded_json:
+        pacgum = get_int(loaded_json, "pacgum", defaults.pacgum,
+                         lo_pacgum_count, max_pacgum_count, warnings)
     points_per_pacgum = get_int(loaded_json, "points_per_pacgum",
                                 defaults.points_per_pacgum,
                                 lo_pacgum, hi_pacgum, warnings)

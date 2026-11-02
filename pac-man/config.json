@@ -6,8 +6,9 @@
     "levels": [
         {"width": 21, "height": 15},
         {"width": 25, "height": 17}
-    ],
-    "pacgum": 42,
+    ], 
+    #pacgum por defecto en 0
+    "pacgum": 0,
     "points_per_pacgum": 10,
     "points_per_super_pacgum": 50,
     "points_per_ghost": 200,
