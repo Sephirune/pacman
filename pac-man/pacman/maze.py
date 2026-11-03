@@ -11,6 +11,7 @@ MIN_WIDTH = 14
 MIN_HEIGHT = 10
 BLOCKED = 15
 
+
 class MazeError(Exception):
     """raised when a maze cannot be generated or is invalid"""
 

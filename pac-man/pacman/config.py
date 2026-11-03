@@ -10,7 +10,7 @@ whi = 60
 hhi = 50
 lo_live = 1
 hi_live = 99
-lo_pacgum_count: 0
+lo_pacgum_count = 0
 max_pacgum_count = 3000
 lo_pacgum = 0
 hi_pacgum = 99
