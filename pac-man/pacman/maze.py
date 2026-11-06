@@ -103,6 +103,34 @@ class MazeData():
                 cell[0]
                 ))
 
+    def distances_from(self, x: int, y: int) -> dict[tuple[int, int], int]:
+        """Returns the distance that must be walked until
+        a valid cell using BFS."""
+
+        if self.is_blocked(x, y):
+            return {}
+
+        distances: dict[tuple[int, int]] = {(x, y): 0}
+        queue: deque[tuple[int, int]] = deque(distances)
+
+        while queue:
+            col, row = queue.popleft()
+            for direction, (drow, dcol) in OFFSETS.items():
+                if self.can_move(row, col, direction):
+                    nrow = row + drow
+                    ncol = col + dcol
+
+                    if not (0 <= nrow < self.height and
+                            0 <= ncol < self.width):
+                        continue
+
+                    neighbour = (ncol, nrow)
+                    if neighbour not in distances:
+                        distances[neighbour] = distances[(col, row)] + 1
+                        queue.append(neighbour)
+
+        return distances
+
 
 def _is_int(value: object) -> bool:
     """Return True for integers, excluding booleans."""
@@ -155,6 +183,3 @@ def generate_maze(width: int, height: int, seed: int) -> MazeData:
         raise MazeError("Generated maze has inconsistent walls.")
 
     return maze_data
-
-
-def distances_from(x: int, y: int) -> dict[int, int]:
