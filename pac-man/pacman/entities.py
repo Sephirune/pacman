@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from pacman.maze import MazeData, WALL_E, WALL_N, WALL_S, WALL_W, OFFSETS, OPPOSITE
-from collections import deque
+from pacman.maze import MazeData, OFFSETS, OPPOSITE
+from enum import Enum
+from random import Random
 
 STOP = 0
 
@@ -109,3 +110,41 @@ class Player(Entity):
             self.queued = STOP
 
         super().update(dt, maze)
+
+
+@dataclass
+class GhostStates(Enum):
+    """Enum class that represents the
+    status of ghosts."""
+    SCARED = 1
+    CHASING = 2
+    EATEN = 3
+
+
+@dataclass(kw_only=True)
+class Ghost(Entity):
+    """Class that represents ghosts in the maze."""
+
+    state: GhostStates
+    corner: tuple[int, int]
+    target: tuple[int, int]
+    rng: Random
+
+    def choose_direction(self, maze) -> int:
+
+        possible_directions: list[int, tuple[int, int]] = []
+        for direction in OFFSETS:
+            if maze.can_move(self.x, self.y, direction):
+                possible_directions.append(direction)
+
+        if len(possible_directions) > 1 and OPPOSITE[self.direction] in possible_directions:
+            possible_directions.remove(OPPOSITE[self.direction])
+
+        if not possible_directions:
+            return STOP
+
+        if self.state == GhostStates.SCARED:
+
+        elif self.state == GhostStates.CHASING:
+
+        elif self.states == GhostStates.EATEN:
