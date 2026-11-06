@@ -113,6 +113,7 @@ def get_int(data: dict[str, Any], key: str, default: int, lo: int, hi: int, warn
 def get_str(data: dict[str, Any], key: str, default: str, warnings: list[str]) -> str:
     """Read a non-empty string from ``data``. If the key is missing,
     ''default'' is returned."""
+
     if key not in data:
         warnings.append(f"value not detected in data: {key}. Default'll be used")
         return default

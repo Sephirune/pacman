@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from collections import deque
 
 
 WALL_N, WALL_E, WALL_S, WALL_W = 1, 2, 4, 8
@@ -62,6 +63,7 @@ class MazeData():
 
     def validate_wall_consistency(self) -> bool:
         """Ensure adjacent cells agree on shared walls."""
+
         for y in range(self.height):
             for x in range(self.width):
                 for direction, (dx, dy) in OFFSETS.items():
@@ -104,6 +106,7 @@ class MazeData():
 
 def _is_int(value: object) -> bool:
     """Return True for integers, excluding booleans."""
+
     return isinstance(value, int) and not isinstance(value, bool)
 
 
@@ -152,3 +155,6 @@ def generate_maze(width: int, height: int, seed: int) -> MazeData:
         raise MazeError("Generated maze has inconsistent walls.")
 
     return maze_data
+
+
+def distances_from(x: int, y: int) -> dict[int, int]:

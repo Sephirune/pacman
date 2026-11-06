@@ -8,7 +8,7 @@ MAX_ENTRIES = 10
 MAX_NAME_LENGTH = 10
 
 
-@dataclass(frozen=True) # Clase inmutable
+@dataclass(frozen=True)  # Clase inmutable
 class ScoreEntry:
     """Highscore record. name must be valid
     and score a positive integer."""
@@ -80,6 +80,7 @@ class HighScores:
     def __init__(self, path: str, max_entries: int = MAX_ENTRIES) -> None:
         """Create an empty table linked to a file which will be readed
         by load."""
+
         self.path = path
         self.max_entries = max_entries
         self.entries: list[ScoreEntry] = []
