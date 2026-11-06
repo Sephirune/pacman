@@ -4,6 +4,11 @@ from enum import Enum
 from random import Random
 
 STOP = 0
+WALL_N, WALL_E, WALL_S, WALL_W = 1, 2, 4, 8
+#  He creado esto para resolver empates. El orden que tenias tu no es el correcto, pero al iterar con esto en este orden los empates se resuelven solos
+#  Imagina que tenemos WALL_N = 5 Y WALL_W = 5. Si no iteramos en el orden de N, W, S, E ganaria WALL_W  porque iba primero cuando no era asi
+#  Wall_N: 5 < inf pasa a ser la best_distance y direction y luego, al procesar WALL_W: 5<5, no se actualiza nada al respeta el orden
+TIEBREAK_ORDER = [WALL_N, WALL_W, WALL_S, WALL_E]
 
 
 @dataclass
@@ -130,21 +135,42 @@ class Ghost(Entity):
     target: tuple[int, int]
     rng: Random
 
-    def choose_direction(self, maze) -> int:
+    def choose_direction(self, maze: MazeData) -> int:
 
-        possible_directions: list[int, tuple[int, int]] = []
+        possible_directions: list[int] = []
         for direction in OFFSETS:
             if maze.can_move(self.x, self.y, direction):
                 possible_directions.append(direction)
 
-        if len(possible_directions) > 1 and OPPOSITE[self.direction] in possible_directions:
-            possible_directions.remove(OPPOSITE[self.direction])
+        # Filtramos la marcha atras si se esta moviendo y hay mas opciones
+        if self.direction != STOP:
+            if len(possible_directions) > 1 and OPPOSITE[self.direction] in possible_directions:
+                possible_directions.remove(OPPOSITE[self.direction])
 
         if not possible_directions:
             return STOP
 
         if self.state == GhostStates.SCARED:
+            return self.rng.choice(possible_directions)
 
-        elif self.state == GhostStates.CHASING:
+        elif (self.state == GhostStates.CHASING or
+              self.state == GhostStates.EATEN):
+            if self.state == GhostStates.CHASING:
+                distances = maze.distances_from(self.target[0], self.target[1])
+            if self.state == GhostStates.EATEN:
+                distances = maze.distances_from(self.corner[0], self.corner[1])
 
-        elif self.states == GhostStates.EATEN:
+            best_direction = STOP
+            best_distance = float('inf')
+
+            for direction in TIEBREAK_ORDER:
+                if direction in possible_directions:
+                    dx, dy = OFFSETS[direction]
+                    nx, ny = self.x + dx, self.y + dy
+                    if (nx, ny) in distances:
+                        distance = distances[(nx, ny)]
+                        if distance < best_distance:
+                            best_distance = distance
+                            best_direction = direction
+
+            return best_direction
