@@ -62,16 +62,19 @@ class Game:
 
     def pause(self) -> None:
         """Pause the game."""
+
         if self.state == GameState.PLAYING:
             self.state = GameState.PAUSED
 
     def resume(self) -> None:
         """Resume the game."""
+
         if self.state == GameState.PAUSED:
             self.state = GameState.PLAYING
 
     def _skip_level(self) -> None:
         """Cheat to skip current level."""
+
         self._next_level()
 
     def update(self, dt: float, maze: MazeData) -> None:

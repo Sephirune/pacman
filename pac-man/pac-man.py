@@ -9,6 +9,7 @@ from pacman.game import Game
 
 def build_game(config) -> Game:
     """Build a Game from a loaded config."""
+
     rng = random.Random()
     level_cfg = config.levels[0]
     maze = generate_maze(level_cfg.width, level_cfg.height, seed=config.seed)

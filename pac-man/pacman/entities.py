@@ -13,6 +13,7 @@ TIEBREAK_ORDER = [WALL_N, WALL_W, WALL_S, WALL_E]
 @dataclass
 class Entity:
     """Class that represents something that moves through the maze."""
+
     x: int
     y: int
     speed: float
@@ -119,12 +120,15 @@ class Player(Entity):
 class GhostStates(Enum):
     """Enum class that represents the
     status of ghosts."""
+
     SCARED = 1
     CHASING = 2
     EATEN = 3
 
 
 class GhostPersonality(Enum):
+    """Class that represents ghosts's personalities."""
+
     BLINKY = 1  # Persigue
     PINKY = 2  # Embosca 4 celdas por delante
     INKY = 3  # tiene tdah y ansiedad
