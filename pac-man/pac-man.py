@@ -55,6 +55,7 @@ def build_game(config) -> Game:
 
 
 def main() -> int:
+
     if len(sys.argv) != 2:
         print("Usage: python3 pac-man.py config.json", file=sys.stderr)
         return 1
