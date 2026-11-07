@@ -123,6 +123,7 @@ class GhostStates(Enum):
     CHASING = 2
     EATEN = 3
 
+
 class GhostPersonality(Enum):
     BLINKY = 1  # Persigue
     PINKY = 2  # Embosca 4 celdas por delante
