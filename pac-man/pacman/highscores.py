@@ -85,7 +85,7 @@ class HighScores:
         self.max_entries = max_entries
         self.entries: list[ScoreEntry] = []
 
-    def load(self, warnings: list[str]) -> None:
+    def _load(self, warnings: list[str]) -> None:
         """Load the table from disk. Missing files aren't errors
         (the first run starts with an empty table). Corrupt JSON files
         are moved to ''<path>.bak'' and the table starts empty."""
@@ -116,7 +116,7 @@ class HighScores:
         valid_json = parse_entries(loaded_json, warnings)
         self.entries = sorted(valid_json, key=lambda e: e.score, reverse=True)[:self.max_entries]
 
-    def add(self, name: str, score: int) -> bool:
+    def _add(self, name: str, score: int) -> bool:
         """Add a score keeping the table sorted and trimmed."""
 
         valid_name = validate_name(name)
@@ -130,12 +130,12 @@ class HighScores:
 
         return any(e is entry for e in self.entries)
 
-    def top(self) -> list[ScoreEntry]:
+    def _top(self) -> list[ScoreEntry]:
         """Return a copy of the table. Best score wins."""
 
         return list(self.entries)
 
-    def save(self, warnings: list[str]) -> bool:
+    def _save(self, warnings: list[str]) -> bool:
         """Write the table to disk. Writes to ''<path>.tmp'' first
         and then replaces the file so a failure never corrupts the
         previous file."""

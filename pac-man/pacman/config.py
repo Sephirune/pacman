@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Any
 import json
 import sys
-from maze import MIN_HEIGHT as hlo, MIN_WIDTH as wlo
+from pacman.maze import MIN_HEIGHT as hlo, MIN_WIDTH as wlo
 
 
 # Valores para los métodos numéricos
@@ -37,7 +37,7 @@ class LevelConfig():
     height: int = 10
 
 
-def fill_levels(levels: list[LevelConfig]) -> list[LevelConfig]:
+def _fill_levels(levels: list[LevelConfig]) -> list[LevelConfig]:
     """Complete a level list up to the minimum number of levels.
     Default levels are appended in place until the list
     has at least 10 levels."""
@@ -50,7 +50,7 @@ def fill_levels(levels: list[LevelConfig]) -> list[LevelConfig]:
 def return_levels() -> list[LevelConfig]:
     """Returns a new list with the default levels."""
 
-    return fill_levels([])
+    return _fill_levels([])
 
 
 @dataclass
