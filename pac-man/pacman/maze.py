@@ -110,13 +110,13 @@ class MazeData():
         if self.is_blocked(x, y):
             return {}
 
-        distances: dict[tuple[int, int]] = {(x, y): 0}
+        distances: dict[tuple[int, int], int] = {(x, y): 0}
         queue: deque[tuple[int, int]] = deque(distances)
 
         while queue:
             col, row = queue.popleft()
-            for direction, (drow, dcol) in OFFSETS.items():
-                if self.can_move(row, col, direction):
+            for direction, (dcol, drow) in OFFSETS.items():
+                if self.can_move(col, row, direction):
                     nrow = row + drow
                     ncol = col + dcol
 

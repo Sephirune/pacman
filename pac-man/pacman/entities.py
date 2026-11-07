@@ -1,10 +1,9 @@
 from dataclasses import dataclass
-from pacman.maze import MazeData, OFFSETS, OPPOSITE
+from pacman.maze import MazeData, OFFSETS, OPPOSITE, WALL_N, WALL_E, WALL_S, WALL_W
 from enum import Enum
 from random import Random
 
 STOP = 0
-WALL_N, WALL_E, WALL_S, WALL_W = 1, 2, 4, 8
 #  He creado esto para resolver empates. El orden que tenias tu no es el correcto, pero al iterar con esto en este orden los empates se resuelven solos
 #  Imagina que tenemos WALL_N = 5 Y WALL_W = 5. Si no iteramos en el orden de N, W, S, E ganaria WALL_W  porque iba primero cuando no era asi
 #  Wall_N: 5 < inf pasa a ser la best_distance y direction y luego, al procesar WALL_W: 5<5, no se actualiza nada al respeta el orden
@@ -117,13 +116,18 @@ class Player(Entity):
         super().update(dt, maze)
 
 
-@dataclass
 class GhostStates(Enum):
     """Enum class that represents the
     status of ghosts."""
     SCARED = 1
     CHASING = 2
     EATEN = 3
+
+class GhostPersonality(Enum):
+    BLINKY = 1  # Persigue
+    PINKY = 2  # Embosca 4 celdas por delante
+    INKY = 3  # tiene tdah y ansiedad
+    CLYDE = 4  # Cobarde
 
 
 @dataclass(kw_only=True)
@@ -133,7 +137,55 @@ class Ghost(Entity):
     state: GhostStates
     corner: tuple[int, int]
     target: tuple[int, int]
+    personality: GhostPersonality
+    last_target_change: float = 0.0
+    distraction_timer: float = 3.0  # Cada cuanto puede cambiar
     rng: Random
+
+    def update_target(self,
+                      player: Entity,
+                      maze: MazeData,
+                      current_time: float) -> None:
+        if self.personality == GhostPersonality.BLINKY:
+            self.target = (player.x, player.y)
+
+        elif self.personality == GhostPersonality.PINKY:
+            player_dir = player.direction
+            if player_dir == STOP:
+                self.target = (player.x, player.y)
+                return
+            target_x = player.x + 4 * OFFSETS[player_dir][0]
+            target_y = player.y + 4 * OFFSETS[player_dir][1]
+
+            bounds = (0 <= target_x < maze.width and
+                      0 <= target_y < maze.height)
+            if bounds and not maze.is_blocked(target_x, target_y):
+                self.target = (target_x, target_y)
+            else:
+                self.target = (player.x, player.y)
+
+        elif self.personality == GhostPersonality.CLYDE:
+            distance = maze.distances_from(player.x, player.y)
+            distance_player = distance.get((self.x, self.y), float('inf'))
+
+            if distance_player > 8:
+                self.target = (player.x, player.y)
+            else:
+                self.target = self.corner
+
+        elif self.personality == GhostPersonality.INKY:
+            if current_time - self.last_target_change > self.distraction_timer:
+                if self.rng.random() < 0.5:
+                    self.target = (player.x, player.y)
+                else:
+                    free_cells = []
+                    for y in range(maze.height):
+                        for x in range(maze.width):
+                            if not maze.is_blocked(x, y):
+                                free_cells.append((x, y))
+                    self.target = self.rng.choice(free_cells)
+
+                self.last_target_change = current_time
 
     def choose_direction(self, maze: MazeData) -> int:
 
@@ -157,7 +209,7 @@ class Ghost(Entity):
               self.state == GhostStates.EATEN):
             if self.state == GhostStates.CHASING:
                 distances = maze.distances_from(self.target[0], self.target[1])
-            if self.state == GhostStates.EATEN:
+            elif self.state == GhostStates.EATEN:
                 distances = maze.distances_from(self.corner[0], self.corner[1])
 
             best_direction = STOP
