@@ -61,7 +61,7 @@ class MazeData():
             (self.width - 1, self.height - 1)
         ]
 
-    def validate_wall_consistency(self) -> bool:
+    def _validate_wall_consistency(self) -> bool:
         """Ensure adjacent cells agree on shared walls."""
 
         for y in range(self.height):
@@ -179,7 +179,7 @@ def generate_maze(width: int, height: int, seed: int) -> MazeData:
                 raise MazeError(f"Invalid cell value: ({x}, {y}) {cell}.")
 
     maze_data = MazeData(width, height, grid)
-    if not maze_data.validate_wall_consistency():
+    if not maze_data._validate_wall_consistency():
         raise MazeError("Generated maze has inconsistent walls.")
 
     return maze_data

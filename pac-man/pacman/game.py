@@ -29,9 +29,14 @@ class Game:
     time_elapsed: float = 0.0
     scared_timer: float = 0.0
     state: GameState = GameState.PLAYING
+    cheat_invincible: bool = False
+    cheat_freeze: bool = False
+    cheat_speed: float = 1.0
+    cheat_skip: bool = False
 
     def _respawn(self) -> None:
         """Reset player and ghosts to their starting positions."""
+
         self.player.x, self.player.y = self.level.player_start
         self.player.direction = STOP
         self.player.progress = 0.0
@@ -43,6 +48,7 @@ class Game:
 
     def _next_level(self) -> None:
         """Load the next level or end the game if there are none left."""
+
         self.level_index += 1
         if self.level_index >= len(self.config.levels):
             self.state = GameState.VICTORY
@@ -55,12 +61,18 @@ class Game:
         self._respawn()
 
     def pause(self) -> None:
+        """Pause the game."""
         if self.state == GameState.PLAYING:
             self.state = GameState.PAUSED
 
     def resume(self) -> None:
+        """Resume the game."""
         if self.state == GameState.PAUSED:
             self.state = GameState.PLAYING
+
+    def _skip_level(self) -> None:
+        """Cheat to skip current level."""
+        self._next_level()
 
     def update(self, dt: float, maze: MazeData) -> None:
         """Advance the game by dt seconds."""
@@ -68,9 +80,17 @@ class Game:
         if self.state != GameState.PLAYING:
             return
 
+        # Checkeo del skip
+        if self.cheat_skip:
+            self.cheat_skip = False
+            self._skip_level()
+            return
+
         # mover personajes
         self.player.update(dt, maze)
         for ghost in self.ghosts:
+            if self.cheat_freeze:
+                continue
             ghost.update_target(self.player, maze, self.time_elapsed)
             ghost.update(dt, maze)
 
@@ -105,7 +125,8 @@ class Game:
                 if ghost.state == GhostStates.SCARED:
                     ghost.state = GhostStates.EATEN
                     self.score += self.config.points_per_ghost
-                elif ghost.state == GhostStates.CHASING:
+                elif (ghost.state == GhostStates.CHASING and not
+                      self.cheat_invincible):
                     self.lives -= 1
                     if self.lives <= 0:
                         self.state = GameState.GAME_OVER
@@ -119,8 +140,4 @@ class Game:
 
         # victoria de nivel
         if not self.level.pacgums:
-            self.level_index += 1
-            if self.level_index >= len(self.config.levels):
-                self.state = GameState.VICTORY
-            else:
-                self._next_level()
+            self._next_level()
