@@ -17,6 +17,7 @@ class Level:
 
 def build_level(maze: MazeData, pacgum_count: int, rng: Random) -> Level:
     """Build a level from a generated maze."""
+
     if pacgum_count < 0:
         raise ValueError(f"pacgum_count must not be negative: {pacgum_count}")
 
