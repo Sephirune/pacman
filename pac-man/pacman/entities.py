@@ -201,7 +201,10 @@ class Ghost(Entity):
 
         # Filtramos la marcha atras si se esta moviendo y hay mas opciones
         if self.direction != STOP:
-            if len(possible_directions) > 1 and OPPOSITE[self.direction] in possible_directions:
+            if (
+                len(possible_directions) > 1
+                and OPPOSITE[self.direction]
+                    in possible_directions):
                 possible_directions.remove(OPPOSITE[self.direction])
 
         if not possible_directions:

@@ -89,16 +89,23 @@ def strip_comments(text: str) -> str:
     return new_text
 
 
-def get_int(data: dict[str, Any], key: str, default: int, lo: int, hi: int, warnings: list[str]) -> int:
+def get_int(data: dict[str, Any],
+            key: str,
+            default: int,
+            lo: int,
+            hi: int,
+            warnings: list[str]) -> int:
     """Read an integer from ``data`` and clamp it to a valid range."""
 
     if key not in data:
-        warnings.append(f"value not detected in data: {key}. Default'll be used")
+        warnings.append(f"value not detected in data: {key}."
+                        "Default'll be used")
         return default
     value = data[key]
 
     if not isinstance(value, int) or isinstance(value, bool):
-        warnings.append(f"value content: {key} is not bool or int. Default'll be used: {default}")
+        warnings.append(f"value content: {key} is not bool or int."
+                        f"Default'll be used: {default}")
         return default
     if value < lo:
         warnings.append(f"value size is too low: {key}. Lo will be used: {lo}")
@@ -110,12 +117,16 @@ def get_int(data: dict[str, Any], key: str, default: int, lo: int, hi: int, warn
     return value
 
 
-def get_str(data: dict[str, Any], key: str, default: str, warnings: list[str]) -> str:
+def get_str(data: dict[str, Any],
+            key: str,
+            default: str,
+            warnings: list[str]) -> str:
     """Read a non-empty string from ``data``. If the key is missing,
     ''default'' is returned."""
 
     if key not in data:
-        warnings.append(f"value not detected in data: {key}. Default'll be used")
+        warnings.append(f"value not detected in data: {key}."
+                        "Default'll be used")
         return default
     value = data[key]
 
@@ -151,7 +162,7 @@ def parse_levels(raw: Any, warnings: list[str]) -> list[LevelConfig]:
             warnings.append("invalid level format.")
             continue
 
-    return fill_levels(level_list)
+    return _fill_levels(level_list)
 
 
 def load_config(path: str) -> GameConfig:
@@ -170,7 +181,8 @@ def load_config(path: str) -> GameConfig:
     try:
         loaded_json = json.loads(stripped_info)
     except json.JSONDecodeError as e:
-        raise ConfigError(f"Invalid JSON at line {e.lineno}, column {e.colno}: {e.msg}") from e
+        raise ConfigError(f"Invalid JSON at line"
+                          f"{e.lineno}, column {e.colno}: {e.msg}") from e
 
     if not isinstance(loaded_json, dict):
         raise ConfigError("invalid json file.")
