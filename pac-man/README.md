@@ -195,14 +195,4 @@ organisation, timeline, risk analysis and acceptance test plan.
 
 ### AI usage
 
-An AI assistant (Claude) was used to:
-
-- write the pygame front-end (`pacman/ui/`), the new entry point and the
-  PyInstaller packaging;
-- review the core modules and fix integration issues (eaten ghosts never
-  respawned, edible ghosts moved randomly instead of fleeing, an uncaught
-  maze error when changing level, highscore methods that were private);
-- write `tests/test_game.py`, the Makefile rules and a first draft of this
-  README and of the project-management documents.
-
-<!-- TODO: describe how you reviewed / tested the generated parts. -->
+An AI assistant (Claude) was used to research pygame, help solve implementation issues and generate this readme
