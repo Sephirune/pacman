@@ -1,12 +1,12 @@
 from dataclasses import dataclass
-from pacman.maze import MazeData, OFFSETS, OPPOSITE, WALL_N, WALL_E, WALL_S, WALL_W
+from pacman.maze import (MazeData, OFFSETS, OPPOSITE,
+                         WALL_N, WALL_E, WALL_S, WALL_W)
 from enum import Enum
 from random import Random
 
 STOP = 0
-#  He creado esto para resolver empates. El orden que tenias tu no es el correcto, pero al iterar con esto en este orden los empates se resuelven solos
-#  Imagina que tenemos WALL_N = 5 Y WALL_W = 5. Si no iteramos en el orden de N, W, S, E ganaria WALL_W  porque iba primero cuando no era asi
-#  Wall_N: 5 < inf pasa a ser la best_distance y direction y luego, al procesar WALL_W: 5<5, no se actualiza nada al respeta el orden
+# Orden de desempate (N, W, S, E). Con distancias iguales gana la primera
+# direccion procesada, porque la comparacion es estricta (5 < 5 es False).
 TIEBREAK_ORDER = [WALL_N, WALL_W, WALL_S, WALL_E]
 
 
@@ -20,7 +20,7 @@ class Entity:
     direction: int = STOP
     progress: float = 0.0
 
-    def choose_direction(self, maze: MazeData) -> int:  # que quiere hacer el personaje?
+    def choose_direction(self, maze: MazeData) -> int:  # que quiere hacer?
         """Return the direction to take from the current cell."""
 
         raise NotImplementedError
@@ -211,7 +211,20 @@ class Ghost(Entity):
             return STOP
 
         if self.state == GhostStates.SCARED:
-            return self.rng.choice(possible_directions)
+            # Huye: elige la casilla mas lejana del objetivo (el jugador,
+            # que Game pone en self.target mientras esta asustado).
+            flee = maze.distances_from(self.target[0], self.target[1])
+            best: list[int] = []
+            best_far = -1
+            for direction in possible_directions:
+                dx, dy = OFFSETS[direction]
+                far = flee.get((self.x + dx, self.y + dy), 0)
+                if far > best_far:
+                    best_far = far
+                    best = [direction]
+                elif far == best_far:
+                    best.append(direction)
+            return self.rng.choice(best)
 
         elif (self.state == GhostStates.CHASING or
               self.state == GhostStates.EATEN):
