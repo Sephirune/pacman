@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.tmp
+*.bak
+highscores.json
