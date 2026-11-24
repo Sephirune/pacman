@@ -99,13 +99,13 @@ def get_int(data: dict[str, Any],
 
     if key not in data:
         warnings.append(f"value not detected in data: {key}."
-                        "Default'll be used")
+                        " Default'll be used")
         return default
     value = data[key]
 
     if not isinstance(value, int) or isinstance(value, bool):
-        warnings.append(f"value content: {key} is not bool or int."
-                        f"Default'll be used: {default}")
+        warnings.append(f"value content: {key} is not an int."
+                        f" Default'll be used: {default}")
         return default
     if value < lo:
         warnings.append(f"value size is too low: {key}. Lo will be used: {lo}")
@@ -126,7 +126,7 @@ def get_str(data: dict[str, Any],
 
     if key not in data:
         warnings.append(f"value not detected in data: {key}."
-                        "Default'll be used")
+                        " Default'll be used")
         return default
     value = data[key]
 
@@ -151,8 +151,8 @@ def parse_levels(raw: Any, warnings: list[str]) -> list[LevelConfig]:
 
     level_list: list[LevelConfig] = []
 
-    for element in raw:        
-        if isinstance(element, dict):    
+    for element in raw:
+        if isinstance(element, dict):
             w = get_int(element, "width", wlo, wlo, whi, warnings)
             h = get_int(element, "height", hlo, hlo, hhi, warnings)
 
@@ -181,7 +181,7 @@ def load_config(path: str) -> GameConfig:
     try:
         loaded_json = json.loads(stripped_info)
     except json.JSONDecodeError as e:
-        raise ConfigError(f"Invalid JSON at line"
+        raise ConfigError(f"Invalid JSON at line "
                           f"{e.lineno}, column {e.colno}: {e.msg}") from e
 
     if not isinstance(loaded_json, dict):

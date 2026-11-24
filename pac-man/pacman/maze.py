@@ -47,9 +47,11 @@ class MazeData():
     def is_blocked(self, x: int, y: int) -> bool:
         """Checks if a cell is blocked or outside the maze."""
 
-        if not (0 <= x < self.width and 0 <= y < self.height): # Lo de fuera del grid esta bloqueado
+        # Lo de fuera del grid esta bloqueado
+        if not (0 <= x < self.width and 0 <= y < self.height):
             return True
-        return self.grid[y][x] == BLOCKED  # Dentro, la celda esta bloqueada si vale 15
+        # Dentro, la celda esta bloqueada si vale 15
+        return self.grid[y][x] == BLOCKED
 
     def corners(self) -> list[tuple[int, int]]:
         """Return the four corners of the maze as (x, y) tuples."""
@@ -69,7 +71,8 @@ class MazeData():
                 for direction, (dx, dy) in OFFSETS.items():
                     nx, ny = x + dx, y + dy
 
-                    if not (0 <= nx < self.width and 0 <= ny < self.height):  # si esta fuera se salta
+                    # si esta fuera se salta
+                    if not (0 <= nx < self.width and 0 <= ny < self.height):
                         continue
                     wall_here = bool(self.grid[y][x] & direction)
 
