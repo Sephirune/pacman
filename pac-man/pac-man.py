@@ -1,72 +1,64 @@
+"""Entry point: python3 pac-man.py config.json"""
+
+import os
 import sys
-import random
-from pacman.config import load_config, ConfigError
-from pacman.maze import generate_maze
-from pacman.level import build_level
-from pacman.entities import Player, Ghost, GhostStates, GhostPersonality, STOP
-from pacman.game import Game
+
+from pacman.config import ConfigError, load_config
+
+USAGE = "Usage: python3 pac-man.py config.json"
 
 
-def build_game(config) -> Game:
-    """Build a Game from a loaded config."""
+def config_path_from_args(argv: list[str]) -> str | None:
+    """Return the config path given on the command line.
 
-    rng = random.Random()
-    level_cfg = config.levels[0]
-    maze = generate_maze(level_cfg.width, level_cfg.height, seed=config.seed)
-    level = build_level(maze, config.pacgum, rng)
+    The packaged build (PyInstaller) is started by double-click, without
+    arguments: in that case only, the ``config.json`` next to the
+    executable is used.
+    """
 
-    player = Player(
-        x=level.player_start[0],
-        y=level.player_start[1],
-        speed=5.0,
-    )
-
-    ghosts = []
-    personalities = [
-        GhostPersonality.BLINKY,
-        GhostPersonality.PINKY,
-        GhostPersonality.INKY,
-        GhostPersonality.CLYDE,
-    ]
-
-    for i in range(len(level.ghost_starts)):
-        start = level.ghost_starts[i]
-        personality = personalities[i]
-        ghost = Ghost(
-            x=start[0], y=start[1],
-            speed=4.5,
-            state=GhostStates.CHASING,
-            corner=start,
-            target=level.player_start,
-            personality=personality,
-            rng=random.Random(),
-        )
-        ghosts.append(ghost)
-
-    return Game(
-        level_index=0,
-        player=player,
-        ghosts=ghosts,
-        level=level,
-        config=config,
-        rng=rng,
-        lives=config.lives,
-    )
+    if len(argv) == 2:
+        return argv[1]
+    if len(argv) == 1 and getattr(sys, "frozen", False):
+        return os.path.join(os.path.dirname(sys.executable), "config.json")
+    return None
 
 
 def main() -> int:
+    """Load the config and run the game. Returns the exit status."""
 
-    if len(sys.argv) != 2:
-        print("Usage: python3 pac-man.py config.json", file=sys.stderr)
+    path = config_path_from_args(sys.argv)
+    if path is None:
+        print(USAGE, file=sys.stderr)
         return 1
 
     try:
-        config = load_config(sys.argv[1])
+        config = load_config(path)
     except ConfigError as e:
         print(f"Error: {e}", file=sys.stderr)
         return 1
 
-    game = build_game(config)
+    # pygame se importa aqui para que los errores de uso/config salgan
+    # sin abrir ventana y sin el mensaje de bienvenida de pygame.
+    os.environ.setdefault("PYGAME_HIDE_SUPPORT_PROMPT", "1")
+    try:
+        import pygame
+        from pacman.ui.app import App
+    except ImportError as e:
+        print(f"Error: missing dependency ({e}). Run 'make install'.",
+              file=sys.stderr)
+        return 1
+
+    try:
+        App(config, path).run()
+    except pygame.error as e:
+        print(f"Error: graphics problem: {e}", file=sys.stderr)
+        return 1
+    except KeyboardInterrupt:
+        return 130
+    except Exception as e:  # ultima red: nunca mostrar un traceback
+        print(f"Error: unexpected problem: {type(e).__name__}: {e}",
+              file=sys.stderr)
+        return 1
     return 0
 
 
