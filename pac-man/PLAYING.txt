@@ -1,0 +1,38 @@
+PAC-MAN - quick guide
+=====================
+
+START
+  Double-click "pac-man" (pac-man.exe on Windows). It reads the
+  config.json file in the same folder.
+  From a terminal you can also pass any config file:
+      ./pac-man my_config.json
+
+CONTROLS
+  Arrow keys or WASD ... move (WASD works by key position, so ZQSD on AZERTY)
+  P or ESC ............. pause / resume (pause menu: Resume, Main Menu)
+  ENTER / SPACE ........ validate in menus
+
+RULES
+  Eat every small dot to clear a level. Big dots in the corners make the
+  ghosts edible for 8 seconds. Touching a ghost costs a life. Each level
+  has a time limit: when it runs out you lose a life and the clock
+  restarts. Clear all levels to win. Enter your name at the end to save
+  your score in the top 10.
+
+CHEATS (for evaluation)
+  1 invincible   2 freeze ghosts   3 skip level   4 extra life
+  5 double speed
+
+CONFIGURATION (config.json, lines starting with # are comments)
+  lives                    starting lives            (1-99, default 3)
+  seed                     maze seed of level 1      (1-999999, default 42)
+  highscore_filename       where scores are saved    (relative to config)
+  levels                   list of {"width", "height"}; min 14x10,
+                           max 60x50, at least 10 levels (padded)
+  pacgum                   number of dots, 0 = every free cell
+  points_per_pacgum        (0-99, default 10)
+  points_per_super_pacgum  (0-150, default 50)
+  points_per_ghost         (default 200)
+  level_max_time           seconds per level (10-600, default 90)
+  Invalid values are replaced by safe defaults and reported in the
+  terminal; unknown keys are ignored.
