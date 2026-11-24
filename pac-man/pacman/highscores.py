@@ -30,7 +30,8 @@ def validate_name(name: str) -> str:
         raise ValueError("Name too long!")
 
     for char in stripped:
-        if not (char == " " or (char.isascii() and char.isalnum())): # No podemos usal alnum porque acepta las tildes, ñ, etc.
+        # isalnum() solo acepta tildes y ñ, por eso exigimos tambien ASCII.
+        if not (char == " " or (char.isascii() and char.isalnum())):
             raise ValueError(f"Invalid character detected: {char}")
 
     return stripped
@@ -61,7 +62,8 @@ def parse_entries(raw: Any, warnings: list[str]) -> list[ScoreEntry]:
                 warnings.append(f"Error validating name: {name}. Error: {e}")
                 continue
             score = element.get("score")
-            if not isinstance(score, int) or isinstance(score, bool) or score < 0:
+            if (not isinstance(score, int) or isinstance(score, bool)
+                    or score < 0):
                 warnings.append(f"Invalid score detected: {score}")
                 continue
             valid_entries.append(ScoreEntry(name=valid_name, score=score))
@@ -85,7 +87,7 @@ class HighScores:
         self.max_entries = max_entries
         self.entries: list[ScoreEntry] = []
 
-    def _load(self, warnings: list[str]) -> None:
+    def load(self, warnings: list[str]) -> None:
         """Load the table from disk. Missing files aren't errors
         (the first run starts with an empty table). Corrupt JSON files
         are moved to ''<path>.bak'' and the table starts empty."""
@@ -108,16 +110,20 @@ class HighScores:
         except json.JSONDecodeError as e:
             try:
                 os.replace(self.path, self.path + ".bak")
-                warnings.append(f"Corrupt json loaded. File moved to .bak to prevent errors: {e}")
+                warnings.append("Corrupt highscore file moved to "
+                                f"'{self.path}.bak': {e}")
             except OSError as backup_error:
-                warnings.append(f"Error. Could not backup file: {backup_error}")
+                warnings.append(
+                    f"Error. Could not backup file: {backup_error}")
             return
 
         valid_json = parse_entries(loaded_json, warnings)
-        self.entries = sorted(valid_json, key=lambda e: e.score, reverse=True)[:self.max_entries]
+        self.entries = sorted(valid_json, key=lambda e: e.score,
+                              reverse=True)[:self.max_entries]
 
-    def _add(self, name: str, score: int) -> bool:
-        """Add a score keeping the table sorted and trimmed."""
+    def add(self, name: str, score: int) -> bool:
+        """Add a score keeping the table sorted and trimmed.
+        Returns True if the new entry made it into the table."""
 
         valid_name = validate_name(name)
 
@@ -126,16 +132,17 @@ class HighScores:
 
         entry = ScoreEntry(valid_name, score)
         self.entries.append(entry)
-        self.entries = sorted(self.entries, key=lambda e: e.score, reverse=True)[:self.max_entries]
+        self.entries = sorted(self.entries, key=lambda e: e.score,
+                              reverse=True)[:self.max_entries]
 
         return any(e is entry for e in self.entries)
 
-    def _top(self) -> list[ScoreEntry]:
+    def top(self) -> list[ScoreEntry]:
         """Return a copy of the table. Best score wins."""
 
         return list(self.entries)
 
-    def _save(self, warnings: list[str]) -> bool:
+    def save(self, warnings: list[str]) -> bool:
         """Write the table to disk. Writes to ''<path>.tmp'' first
         and then replaces the file so a failure never corrupts the
         previous file."""
