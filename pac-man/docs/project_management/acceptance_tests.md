@@ -50,7 +50,7 @@ Manual tests below are run with `make run` unless stated otherwise.
 | --- | --- | --- | --- |
 | P1 | `make package` | `dist/pac-man/` and `dist/pac-man.zip` | OK (Linux) |
 | P2 | Launch the built executable without arguments | Uses bundled `config.json` | OK (Linux) |
-| P3 | Download from itch.io and play | Works | TODO |
+| P3 | Download from itch.io and play | Works |  |
 
 ## Bugs found and fixed during integration
 
