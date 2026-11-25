@@ -7,7 +7,7 @@
         {"width": 21, "height": 15},
         {"width": 25, "height": 17}
     ], 
-    #pacgum por defecto en 0
+    # pacgum defaults to 0 (one per free cell)
     "pacgum": 0,
     "points_per_pacgum": 10,
     "points_per_super_pacgum": 50,

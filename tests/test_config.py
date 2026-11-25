@@ -17,14 +17,14 @@ def write(tmp_path: Path, name: str, content: str) -> str:
 
 
 def test_strip_comments() -> None:
-    text = '# comentario\n{"a": 1}\n  # otro'
+    text = '# comment\n{"a": 1}\n  # another'
     assert strip_comments(text) == '\n{"a": 1}\n'
 
 
 @pytest.mark.parametrize("data, expected, n_warnings", [
     ({"lives": 5}, 5, 0),
     ({"lives": True}, 3, 1),
-    ({"lives": "tres"}, 3, 1),
+    ({"lives": "three"}, 3, 1),
     ({"lives": 500}, 99, 1),
     ({"lives": 0}, 1, 1),
     ({}, 3, 1),
@@ -38,7 +38,7 @@ def test_get_int(data: dict[str, Any], expected: int,
 
 def test_parse_levels_clamps_and_fills() -> None:
     warnings: list[str] = []
-    raw = [{"width": 21, "height": 15}, {"width": 99, "height": 12}, "hola"]
+    raw = [{"width": 21, "height": 15}, {"width": 99, "height": 12}, "hello"]
     levels = parse_levels(raw, warnings)
     assert levels[0] == LevelConfig(width=21, height=15)
     assert levels[1] == LevelConfig(width=60, height=12)
@@ -74,7 +74,7 @@ def test_root_is_list(tmp_path: Path) -> None:
 
 
 def test_valid_config_with_comments(tmp_path: Path) -> None:
-    content = '# comentario\n{"lives": 5, "seed": 7, "foo": 1}\n'
+    content = '# comment\n{"lives": 5, "seed": 7, "foo": 1}\n'
     cfg = load_config(write(tmp_path, "c.json", content))
     assert cfg.lives == 5
     assert cfg.seed == 7
@@ -83,7 +83,7 @@ def test_valid_config_with_comments(tmp_path: Path) -> None:
 
 def test_warnings_go_to_stderr(
         tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    load_config(write(tmp_path, "c.json", '{"lives": "tres"}'))
+    load_config(write(tmp_path, "c.json", '{"lives": "three"}'))
     assert "lives" in capsys.readouterr().err
 
 

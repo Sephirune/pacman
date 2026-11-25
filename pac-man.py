@@ -37,8 +37,8 @@ def main() -> int:
         print(f"Error: {e}", file=sys.stderr)
         return 1
 
-    # pygame se importa aqui para que los errores de uso/config salgan
-    # sin abrir ventana y sin el mensaje de bienvenida de pygame.
+    # pygame is imported here so usage/config errors are shown without
+    # opening a window and without pygame's welcome message.
     os.environ.setdefault("PYGAME_HIDE_SUPPORT_PROMPT", "1")
     try:
         import pygame
@@ -55,7 +55,7 @@ def main() -> int:
         return 1
     except KeyboardInterrupt:
         return 130
-    except Exception as e:  # ultima red: nunca mostrar un traceback
+    except Exception as e:  # last resort: never show a traceback
         print(f"Error: unexpected problem: {type(e).__name__}: {e}",
               file=sys.stderr)
         return 1

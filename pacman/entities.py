@@ -5,8 +5,8 @@ from enum import Enum
 from random import Random
 
 STOP = 0
-# Orden de desempate (N, W, S, E). Con distancias iguales gana la primera
-# direccion procesada, porque la comparacion es estricta (5 < 5 es False).
+# Tie-break order (N, W, S, E). With equal distances the first direction
+# processed wins, because the comparison is strict (5 < 5 is False).
 TIEBREAK_ORDER = [WALL_N, WALL_W, WALL_S, WALL_E]
 
 
@@ -20,12 +20,12 @@ class Entity:
     direction: int = STOP
     progress: float = 0.0
 
-    def choose_direction(self, maze: MazeData) -> int:  # que quiere hacer?
+    def choose_direction(self, maze: MazeData) -> int:  # what does it want?
         """Return the direction to take from the current cell."""
 
         raise NotImplementedError
 
-    def _pick(self, maze: MazeData) -> int:  # es posible que haga eso?
+    def _pick(self, maze: MazeData) -> int:  # is it possible?
         """Returns a possible direction, or STOP."""
 
         direction = self.choose_direction(maze)
@@ -129,10 +129,10 @@ class GhostStates(Enum):
 class GhostPersonality(Enum):
     """Class that represents ghosts's personalities."""
 
-    BLINKY = 1  # Persigue
-    PINKY = 2  # Embosca 4 celdas por delante
-    INKY = 3  # tiene tdah y ansiedad
-    CLYDE = 4  # Cobarde
+    BLINKY = 1  # Chases
+    PINKY = 2  # Ambushes 4 cells ahead
+    INKY = 3  # Unpredictable
+    CLYDE = 4  # Shy
 
 
 @dataclass(kw_only=True)
@@ -144,7 +144,7 @@ class Ghost(Entity):
     target: tuple[int, int]
     personality: GhostPersonality
     last_target_change: float = 0.0
-    distraction_timer: float = 3.0  # Cada cuanto puede cambiar
+    distraction_timer: float = 3.0  # How often it can change target
     rng: Random
 
     def update_target(self,
@@ -199,7 +199,7 @@ class Ghost(Entity):
             if maze.can_move(self.x, self.y, direction):
                 possible_directions.append(direction)
 
-        # Filtramos la marcha atras si se esta moviendo y hay mas opciones
+        # Remove going back if it is moving and has other options
         if self.direction != STOP:
             if (
                 len(possible_directions) > 1
@@ -211,8 +211,8 @@ class Ghost(Entity):
             return STOP
 
         if self.state == GhostStates.SCARED:
-            # Huye: elige la casilla mas lejana del objetivo (el jugador,
-            # que Game pone en self.target mientras esta asustado).
+            # Flee: pick the cell farthest from the target (the player,
+            # which Game puts in self.target while scared).
             flee = maze.distances_from(self.target[0], self.target[1])
             best: list[int] = []
             best_far = -1

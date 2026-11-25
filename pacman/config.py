@@ -5,7 +5,7 @@ import sys
 from pacman.maze import MIN_HEIGHT as hlo, MIN_WIDTH as wlo
 
 
-# Valores para los métodos numéricos
+# Valid ranges for the numeric values
 whi = 60
 hhi = 50
 lo_live = 1
@@ -147,7 +147,7 @@ def parse_levels(raw: Any, warnings: list[str]) -> list[LevelConfig]:
 
     if not isinstance(raw, list) or not raw:
         warnings.append("'levels' is missing or not a non-empty list.")
-        return return_levels()  # Si no hay datos, devuelve niveles
+        return return_levels()  # No data: return the default levels
 
     level_list: list[LevelConfig] = []
 

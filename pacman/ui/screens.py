@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 import pygame
 
-from pacman.game import Game, GameEvent, GameState, LevelLoadError, new_game
+from pacman.game import Game, GameState, LevelLoadError, new_game
 from pacman.highscores import MAX_NAME_LENGTH, ScoreEntry, validate_name
 from pacman.maze import WALL_E, WALL_N, WALL_S, WALL_W
 from pacman.ui.renderer import GameRenderer
@@ -17,7 +17,7 @@ from pacman.ui.theme import (BACKGROUND, CYAN, GHOST_COLORS, GREEN, GREY,
 if TYPE_CHECKING:
     from pacman.ui.app import App
 
-# Flechas (por tecla) y WASD (por posicion fisica: funciona en AZERTY/QWERTY)
+# Arrows (by key) and WASD (by physical position: works on AZERTY too)
 ARROW_KEYS = {pygame.K_UP: WALL_N, pygame.K_DOWN: WALL_S,
               pygame.K_LEFT: WALL_W, pygame.K_RIGHT: WALL_E}
 WASD_SCANCODES = {pygame.KSCAN_W: WALL_N, pygame.KSCAN_S: WALL_S,
@@ -165,25 +165,9 @@ class MenuScreen(Screen):
         draw_score_table(screen, self.app, self.app.highscores.top(),
                          255, 740, self.highlight)
 
-        self._draw_parade(screen)
         if self.app.message:
             draw_text(screen, self.app.fonts.small, self.app.message, RED,
                       (WINDOW_WIDTH // 2, WINDOW_HEIGHT - 30))
-
-    def _draw_parade(self, screen: pygame.Surface) -> None:
-        """Pac-Man chased by the four ghosts at the bottom of the menu."""
-
-        sprites = self.app.menu_sprites
-        y = 640
-        span = WINDOW_WIDTH + 300
-        x = int(self.app.clock_time * 160) % span - 150
-        for i in range(0, WINDOW_WIDTH, 40):
-            if i > x + 30:
-                screen.blit(sprites.pacgum, (i, y))
-        screen.blit(sprites.pacman_frame(WALL_E, self.app.clock_time),
-                    (x, y))
-        for i in range(4):
-            screen.blit(sprites.ghosts[(i, WALL_E)], (x - 60 - i * 40, y))
 
 
 # ----------------------------------------------------------------------
@@ -287,9 +271,6 @@ class GameScreen(Screen):
     def handle_event(self, event: pygame.event.Event) -> None:
         """Movement, pause and cheat keys."""
 
-        if event.type == pygame.WINDOWFOCUSLOST:
-            self.game.pause()
-            return
         if event.type != pygame.KEYDOWN or self.game.is_over:
             return
         if self.game.state == GameState.PAUSED:
@@ -308,9 +289,10 @@ class GameScreen(Screen):
         elif event.key in (pygame.K_3, pygame.K_KP3):
             self.game.cheat_skip = True
         elif event.key in (pygame.K_4, pygame.K_KP4):
-            self.game.cheat_add_life()
+            self.game.lives += 1
         elif event.key in (pygame.K_5, pygame.K_KP5):
-            self.game.toggle_cheat_speed()
+            self.game.cheat_speed = 2.0 if self.game.cheat_speed == 1.0 \
+                else 1.0
 
     def _pause_event(self, event: pygame.event.Event) -> None:
         """Navigation inside the pause menu."""
@@ -329,13 +311,6 @@ class GameScreen(Screen):
         """Advance the game, then react to what happened."""
 
         self.game.update(dt)
-        for event in self.game.pop_events():
-            pos = (float(self.game.player.x), float(self.game.player.y))
-            if event == GameEvent.GHOST_EATEN:
-                self.renderer.add_floating(
-                    f"+{self.game.config.points_per_ghost}", pos)
-            elif event == GameEvent.TIME_UP:
-                self.renderer.add_floating("TIME UP!", pos)
         if self.game.state != GameState.PAUSED:
             self.renderer.update(dt)
 
@@ -379,7 +354,7 @@ class EndScreen(Screen):
         self.victory = game.state == GameState.VICTORY
         self.score = game.score
         self.level_reached = game.level_number
-        self.level_count = game.level_count
+        self.level_count = len(game.config.levels)
         self.name = ""
         self.error = ""
 

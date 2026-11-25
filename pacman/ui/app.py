@@ -22,7 +22,7 @@ from pacman.ui.screens import MenuScreen, Screen, start_game_screen
 from pacman.ui.sprites import SpriteSet
 from pacman.ui.theme import FPS, WINDOW_HEIGHT, WINDOW_WIDTH, Fonts
 
-MAX_DT = 0.05   # evita saltos enormes si la ventana se congela un momento
+MAX_DT = 0.05   # avoids huge jumps if the window freezes
 
 
 def resolve_highscore_path(config: GameConfig, config_path: str) -> str:
@@ -52,7 +52,7 @@ class App:
         self.highscores.load(warnings)
         self._report(warnings)
 
-        # Solo ventana y texto: el juego no usa sonido (MLX tampoco).
+        # Display and text only: no sound (MLX has none).
         pygame.display.init()
         pygame.font.init()
         pygame.display.set_caption("Pac-Man")
@@ -69,7 +69,7 @@ class App:
         for warning in warnings:
             print(f"Warning: {warning}", file=sys.stderr)
 
-    # Acciones que piden las pantallas
+    # Actions requested by the screens
     def switch(self, screen: Screen) -> None:
         """Show another screen from the next frame."""
 

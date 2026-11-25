@@ -8,7 +8,7 @@ MAX_ENTRIES = 10
 MAX_NAME_LENGTH = 10
 
 
-@dataclass(frozen=True)  # Clase inmutable
+@dataclass(frozen=True)  # Immutable class
 class ScoreEntry:
     """Highscore record. name must be valid
     and score a positive integer."""
@@ -30,7 +30,7 @@ def validate_name(name: str) -> str:
         raise ValueError("Name too long!")
 
     for char in stripped:
-        # isalnum() solo acepta tildes y ñ, por eso exigimos tambien ASCII.
+        # isalnum() alone accepts accents and ñ, so ASCII is required too.
         if not (char == " " or (char.isascii() and char.isalnum())):
             raise ValueError(f"Invalid character detected: {char}")
 

@@ -16,7 +16,7 @@ from pacman.ui.theme import (BLACK, GHOST_COLORS, PELLET, RED, SCARED_BLUE,
                              WHITE, YELLOW, Color)
 
 TRANSPARENT = (0, 0, 0, 0)
-MOUTH_ANGLES = [4, 28, 48]           # grados, apertura de la boca por frame
+MOUTH_ANGLES = [4, 28, 48]           # mouth opening in degrees, per frame
 DIRECTION_ANGLE = {WALL_E: 0, WALL_N: 90, WALL_W: 180, WALL_S: 270,
                    STOP: 0}
 
@@ -60,7 +60,7 @@ def _ghost_body(image: pygame.Surface, color: Color) -> None:
     pygame.draw.rect(image, color,
                      pygame.Rect(round(left), round(top_c),
                                  round(right - left), round(s * 0.42)))
-    # Falda ondulada: tres picos hacia abajo
+    # Wavy skirt: three spikes at the bottom
     bottom = s * 0.92
     width = (right - left) / 3
     for i in range(3):

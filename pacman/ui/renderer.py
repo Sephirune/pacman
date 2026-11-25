@@ -17,7 +17,7 @@ FOOTER_HEIGHT = 40
 MARGIN = 12
 MAX_TILE = 40
 MIN_TILE = 8
-FLASH_TIME = 2.0   # el fantasma asustado parpadea los ultimos 2 segundos
+FLASH_TIME = 2.0   # scared ghosts flash during the last 2 s
 
 
 def tile_size_for(maze: MazeData) -> int:
@@ -50,7 +50,7 @@ def render_maze(maze: MazeData, tile: int) -> pygame.Surface:
                 (WALL_E, (right, top), (right, bottom)),
             ]
             for bit, start, end in edges:
-                # Entre dos celdas del "42" no se dibuja pared: bloque macizo
+                # No wall between two "42" cells: solid block
                 dx, dy = OFFSETS[bit]
                 inside_42 = (cell == BLOCKED and
                              maze.is_blocked(x + dx, y + dy) and
@@ -61,23 +61,6 @@ def render_maze(maze: MazeData, tile: int) -> pygame.Surface:
                     pygame.draw.circle(image, WALL, start, thick / 2)
                     pygame.draw.circle(image, WALL, end, thick / 2)
     return image
-
-
-class FloatingText:
-    """Small text that floats up and disappears (e.g. "+200")."""
-
-    def __init__(self, text: str, pos: tuple[float, float]) -> None:
-        """Create the text at pixel position ``pos``."""
-
-        self.text = text
-        self.x, self.y = pos
-        self.ttl = 1.0
-
-    def update(self, dt: float) -> None:
-        """Move up and fade."""
-
-        self.ttl -= dt
-        self.y -= 20 * dt
 
 
 class GameRenderer:
@@ -93,7 +76,6 @@ class GameRenderer:
         self.maze_image = pygame.Surface((1, 1))
         self.sprites = SpriteSet(self.tile)
         self.hud_sprites = SpriteSet(24)
-        self.floating: list[FloatingText] = []
         self.anim_time = 0.0
 
     def _prepare(self, level: Level) -> None:
@@ -111,7 +93,6 @@ class GameRenderer:
         ox = (WINDOW_WIDTH - self.maze_image.get_width()) // 2
         oy = HUD_HEIGHT + (play_h - self.maze_image.get_height()) // 2
         self.origin = (ox, oy)
-        self.floating.clear()
 
     def to_screen(self, fx: float, fy: float) -> tuple[int, int]:
         """Top-left pixel of the (float) cell position ``(fx, fy)``."""
@@ -119,19 +100,10 @@ class GameRenderer:
         return (round(self.origin[0] + fx * self.tile),
                 round(self.origin[1] + fy * self.tile))
 
-    def add_floating(self, text: str, cell: tuple[float, float]) -> None:
-        """Show ``text`` above the given cell for one second."""
-
-        px, py = self.to_screen(*cell)
-        self.floating.append(FloatingText(text, (px + self.tile / 2, py)))
-
     def update(self, dt: float) -> None:
         """Advance animations."""
 
         self.anim_time += dt
-        for f in self.floating:
-            f.update(dt)
-        self.floating = [f for f in self.floating if f.ttl > 0]
 
     # ------------------------------------------------------------------
     def draw(self, screen: pygame.Surface, game: Game) -> None:
@@ -148,9 +120,6 @@ class GameRenderer:
         frame = self.sprites.pacman_frame(
             game.player.direction, self.anim_time if moving else 0.1)
         screen.blit(frame, self.to_screen(px, py))
-        for f in self.floating:
-            draw_text(screen, self.fonts.small, f.text, WHITE,
-                      (round(f.x), round(f.y)))
         if game.ready_timer > 0 and game.state == GameState.PLAYING:
             sx, sy = self.to_screen(*game.level.player_start)
             draw_text(screen, self.fonts.medium, "READY!", YELLOW,
@@ -188,8 +157,8 @@ class GameRenderer:
         draw_text(screen, self.fonts.medium, f"SCORE {game.score}", WHITE,
                   (24, mid), "left")
         draw_text(screen, self.fonts.medium,
-                  f"LEVEL {game.level_number}/{game.level_count}", YELLOW,
-                  (WINDOW_WIDTH // 2, mid))
+                  f"LEVEL {game.level_number}/{len(game.config.levels)}",
+                  YELLOW, (WINDOW_WIDTH // 2, mid))
         left = int(game.time_left + 0.999)
         time_color = RED if left <= 10 else WHITE
         draw_text(screen, self.fonts.medium,
