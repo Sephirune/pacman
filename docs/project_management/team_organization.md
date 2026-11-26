@@ -7,14 +7,14 @@ both halves could be developed and tested independently.
 
 | Area | Modules | Owner |
 | --- | --- | --- |
-| Configuration parsing | `pacman/config.py`, `tests/test_config.py` |  |
-| Maze integration, levels | `pacman/maze.py`, `pacman/level.py` |  |
-| Entities and ghost AI | `pacman/entities.py` |  |
-| Game rules | `pacman/game.py` |  (initial) /  (integration) |
-| Highscores | `pacman/highscores.py`, `tests/test_highscores.py` |  |
-| pygame UI (menus, HUD, screens, sprites) | `pacman/ui/` |  |
-| Packaging, Makefile, pyproject | `pac-man.spec`, `Makefile`, `pyproject.toml` |  |
-| Documentation | `README.md`, `docs/` |  |
+| Configuration parsing | `pacman/config.py`, `tests/test_config.py` | aarogarc |
+| Maze integration, levels | `pacman/maze.py`, `pacman/level.py` | aarogarc |
+| Entities and ghost AI | `pacman/entities.py` | aarogarc |
+| Game rules | `pacman/game.py` |  aarogarc(initial) /  guantino(integration) |
+| Highscores | `pacman/highscores.py`, `tests/test_highscores.py` | guantino |
+| pygame UI (menus, HUD, screens, sprites) | `pacman/ui/` | guantino |
+| Packaging, Makefile, pyproject | `pac-man.spec`, `Makefile`, `pyproject.toml` | guantino |
+| Documentation | `README.md`, `docs/` | guantino |
 
 ## Interface contract between the two halves
 

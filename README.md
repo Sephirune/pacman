@@ -195,4 +195,4 @@ organisation, timeline, risk analysis and acceptance test plan.
 
 ### AI usage
 
-An AI assistant (Claude) was used to research pygame, help solve implementation issues and generate this readme
+An AI assistant (Claude) was used to research pygame <-> MLX equivalents, help solve implementation issues, tests and generate this README
